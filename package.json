@@ -1,0 +1,27 @@
+{
+  "name": "emulsiv",
+  "version": "1.1.0",
+  "description": "A RISC-V (rv32e) visual instruction set simulator",
+  "author": "Guillaume Savaton",
+  "license": "MPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Guillaume-Savaton-ESEO/emulsiV.git"
+  },
+  "scripts": {
+    "start": "node_modules/.bin/ws -o",
+    "test": "node_modules/.bin/ws -o -d test",
+    "lint": "node_modules/.bin/eslint src"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "file-saver": "^2.0.2",
+    "fontsource-arsenal": "^3.0.9",
+    "fontsource-roboto": "^3.0.3",
+    "fontsource-roboto-mono": "^3.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.11.0",
+    "local-web-server": "^4.2.1"
+  }
+}

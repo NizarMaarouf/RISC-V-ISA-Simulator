@@ -1,0 +1,497 @@
+
+@import "node_modules/@fortawesome/fontawesome-free/css/all.css";
+@import "node_modules/fontsource-roboto/latin-400.css";
+@import "node_modules/fontsource-roboto/latin-700.css";
+@import "node_modules/fontsource-roboto-mono/latin-400.css";
+@import "node_modules/fontsource-roboto-mono/latin-700.css";
+
+body {
+    font-family: "Roboto", sans-serif;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+background-color : #e7d4b5;;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: grid;
+    grid-template-rows: auto auto max-content;
+
+    user-select: none;
+}
+h1{
+    border : 2px solid #87a7b3;
+    border-radius: 1rem;
+    font-size:3rem;
+    color:brown;
+    padding: 1rem 1rem;
+    background-color:#fff;
+}
+
+
+@media screen and (min-width: 1701px) and (min-height: 800px) {
+    html, input, textarea, select, button {
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 1700px) and (min-height: 800px) {
+    html, input, textarea, select, button {
+        font-size: 14.5px;
+    }
+}
+
+@media screen and (max-width: 1600px) and (min-height: 800px) {
+    html, input, textarea, select, button {
+        font-size: 13.25px;
+    }
+}
+
+@media screen and (min-width: 1501px) and (max-height: 799px) {
+    html, input, textarea, select, button {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 1500px) {
+    html, input, textarea, select, button {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    html, input, textarea, select, button {
+        font-size: 10.75px;
+    }
+}
+
+@media screen and (max-width: 1300px) {
+    html, input, textarea, select, button {
+        font-size: 9.5px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    html, input, textarea, select, button {
+        font-size: 8.25px;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+    html, input, textarea, select, button {
+        font-size: 7px;
+    }
+}
+
+.divider {
+    height: 0.3rem;
+    width: 100%;
+    margin: 0;
+    border: none;
+    background: transparent;
+    display: grid;
+    box-shadow: 0 0.2rem 0.15rem rgba(0, 0, 0, 20%);
+}
+
+.divider:hover {
+    background: hsl(288, 100%, 90%);
+    cursor: row-resize;
+}
+
+/* ---------------------------------------------------- *
+ * Toolbar
+ * ---------------------------------------------------- */
+
+.toolbar {
+    box-sizing: border-box;
+    width: 100vw;
+    padding: 0.2rem 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+}
+
+.toolbar-group:last-child {
+    text-align: right;
+}
+
+.toolbar button {
+    border: none;
+    padding: 0 0;
+    margin-right: 0.3rem;
+    font-size: 110%;
+    background: transparent;
+}
+
+input[type=button] {
+    padding: 0;
+}
+
+input, select, textarea, button {
+    font-family: Roboto, sans-serif;
+}
+
+#speed {
+    width: 4rem;
+}
+
+#gen-link-btn {
+    transition: background-color 0.25s;
+}
+
+#gen-link-btn.active {
+background-color : #87a7b3;
+border-radius : 1rem;
+
+}
+
+input.state-btn {
+    padding: 0.1rem 0.4rem;
+}
+
+.state-btn {
+    border: none;
+    background-color: hsl(35, 100%, 60%);
+    color: black;
+    border-radius : 1rem;
+
+}
+
+.state-btn[disabled] {
+background-color : #87a7b3;
+border-radius: 1rem;
+    color: black;
+}
+
+.state-btn.active {
+    background-color: hsl(115, 60%, 60%);
+}
+
+/* ---------------------------------------------------- *
+ * Datapath
+ * ---------------------------------------------------- */
+
+.main {
+    box-sizing: border-box;
+    width: 100vw;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: repeat(5, 1fr);
+    overflow-y: hidden;
+}
+
+.tbl-wrapper {
+    overflow-y: scroll;
+}
+
+.cell {
+    padding: 0 1rem;
+}
+
+.cell h1 {
+    font-size: 100%;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.cell h1:first-child {
+    margin-top: 0.5rem;
+}
+
+.cell table:first-child {
+    margin-top: 0;
+}
+
+.cell table {
+    border-collapse: collapse;
+    margin: 0.5rem auto;
+}
+
+.cell th,
+.cell td {
+    padding: 0.2rem 0.5rem;
+    vertical-align: middle;
+}
+
+.cell th {
+    text-align: right;
+    font-weight: normal;
+}
+
+.cell thead th {
+    text-align: center;
+    position: sticky;
+    top: 0;
+    background: white;
+}
+
+.cell th {
+    border: none;
+}
+
+.cell .overlay td {
+    padding: 0;
+}
+
+.bus, .reg {
+    transition: background-color 0.25s;
+    text-align: center;
+    font-family: "Roboto Mono", monospace;
+    font-size: 95%;
+}
+
+.bus {
+    border-top: 1px solid hsl(60, 80%, 40%);
+    border-bottom: 1px solid hsl(60, 80%, 40%);
+    width: 6em;
+}
+
+.overlay {
+    visibility: collapse;
+}
+
+.overlay .bus {
+    width: auto;
+}
+
+.reg {
+    border: 1px solid hsl(60, 80%, 40%);
+    background-color: hsl(60, 80%, 90%);
+    box-shadow: 0.2rem 0.2rem 0.3rem rgba(0, 0, 0, 30%);
+}
+
+.cell .written {
+    background-color: hsl(20, 100%, 70%);
+}
+
+.cell .selected {
+    background-color: hsl(180, 100%, 90%);
+}
+
+.cell .overview {
+    background-color: hsl(60, 80%, 40%);
+}
+
+.moving-value {
+    font-family: "Roboto Mono", monospace;
+    display: none;
+    position: absolute;
+    background-color: hsl(180, 100%, 80%);
+    border-radius: 1rem;
+    left: 0;
+    top: 0;
+    box-shadow: 0.2rem 0.2rem 0.3rem rgba(0, 0, 0, 30%);
+}
+
+.asm {
+    text-align: left;
+    background-color: white;
+    border: 1px solid hsl(60, 80%, 40%);
+}
+
+.brk {
+    background-color: white;
+    border: none;
+    color: rgb(220, 220, 220);
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.brk:hover {
+    color: rgb(200, 200, 200);
+}
+
+.brk.enabled {
+    color: rgb(255, 50, 50);
+}
+
+.asm.active {
+    background-color: hsl(288, 100%, 90%);
+}
+
+.asm abbr {
+    font-style: italic;
+    cursor: help;
+}
+
+.cell input {
+    width: 100%;
+}
+
+.asm {
+    font-family: "Roboto Mono", monospace;
+    white-space: pre;
+}
+
+/* ---------------------------------------------------- *
+ * I/O
+ * ---------------------------------------------------- */
+
+.io {
+    box-sizing: border-box;
+    width: 100vw;
+    padding-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    overflow-y: auto;
+}
+
+.io.resizing {
+    background: white;
+}
+
+.io .cell {
+    height: 100%;
+}
+
+#text-input {
+    border: 1px solid black;
+    padding: 0.2rem 0.4rem;
+}
+
+pre {
+    font-family: "Roboto Mono", monospace;
+    padding: 0.1rem 0.2rem;
+    background: black;
+    color: lightgreen;
+    height: 5rem;
+    overflow: auto;
+    width: 100%;
+    /* white-space: pre-wrap;
+    overflow-wrap: break-word; */
+}
+
+canvas {
+    border: 1px solid black;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+canvas:hover {
+    cursor: crosshair;
+}
+
+#eseo-logo {
+    margin-top: 0.5rem;
+    height: 3rem;
+}
+
+#emulsiv-logo {
+    height: 6rem;
+}
+
+.branding {
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+    border-spacing: 1.5rem;
+}
+
+.branding > div {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.branding ul {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0;
+    list-style-type: none;
+    text-align: left;
+}
+
+a {
+    color: hsl(210, 55%, 40%);
+}
+
+a img {
+    border: none;
+}
+
+#gpio {
+    border-spacing: 2px;
+    border-collapse: separate;
+}
+
+#gpio td {
+    width: 0.4rem;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    background: rgb(220, 220, 220);
+}
+
+#gpio td:hover {
+    cursor: pointer;
+}
+
+#gpio td.push {
+    background: rgb(100, 100, 100);
+}
+
+#gpio td.push.on {
+    background: rgb(150, 150, 150);
+}
+
+#gpio td.toggle {
+    border: 2px solid rgb(150, 150, 150);
+    background: linear-gradient(to bottom, rgb(220, 220, 220) 60%, rgb(100, 100, 100) 60%);
+}
+
+#gpio td.toggle.on {
+    background: linear-gradient(to top, rgb(220, 220, 220) 60%, rgb(100, 100, 100) 60%);
+}
+
+#gpio td.led {
+    border-radius: 50%;
+    border: 2px solid rgb(0, 255, 0);
+    background-color: rgb(0, 50, 0);
+}
+
+#gpio td.led.on {
+    border: 2px solid rgb(0, 50, 0);
+    background-color: rgb(0, 255, 0);
+}
+
+/* ---------------------------------------------------- *
+ * Bus overlay
+ * ---------------------------------------------------- */
+
+svg {
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+}
+
+path {
+    stroke-width: 4px;
+    fill: none;
+}
+
+marker path {
+    stroke: none;
+    marker-end: none;
+}
+
+path.bus1               { stroke: hsl(180, 25%, 70%);  marker-end: url(#arrow-marker-bus1); }
+marker.bus1 path        { fill:   hsl(180, 25%, 70%); }
+path.bus1.active        { stroke: hsl(180, 100%, 40%); marker-end: url(#arrow-marker-active-bus1); }
+marker.bus1.active path { fill:   hsl(180, 100%, 40%); }
+
+path.bus2               { stroke: hsl(60, 25%, 70%);  marker-end: url(#arrow-marker-bus2); }
+marker.bus2 path        { fill:   hsl(60, 25%, 70%); }
+path.bus2.active        { stroke: hsl(60, 75%, 40%); marker-end: url(#arrow-marker-active-bus2); }
+marker.bus2.active path { fill:   hsl(60, 75%, 40%); }
+
+path.bus3               { stroke: hsl(30, 70%, 70%);   marker-end: url(#arrow-marker-bus3); }
+marker.bus3 path        { fill:   hsl(30, 70%, 70%); }
+path.bus3.active        { stroke: hsl(30, 100%, 40%);  marker-end: url(#arrow-marker-active-bus3); }
+marker.bus3.active path { fill:   hsl(30, 100%, 40%); }
+
+/* Spell checkers like Grammalecte may add elements that mess the layout of tables */
+tr > div {
+    display: none !important;
+}

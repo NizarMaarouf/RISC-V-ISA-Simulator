@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<meta charset="utf-8">
+
+<link rel="stylesheet" type="text/css" href="index.css">
+
+<title> Simulator for Virgule, a minimal processor based on the RISC-V architecture</title>
+
+<div class="toolbar">
+    <div class="toolbar-group">
+        <button id="font-plus-btn"  title="Increase font size."><i class="fas fa-search-plus"></i></button>
+        <button id="font-minus-btn" title="Decrease font size."><i class="fas fa-search-minus"></i></button>
+        <button id="gen-link-btn"   title="Create a link to this program and copy the address into the clipboard."><i class="fas fa-link"></i></button>
+        <button id="download-btn"   title="Download this program as an hex file."><i class="fas fa-download"></i></button>
+        <button id="open-btn"       title="Open an hex file from your computer."><i class="far fa-folder-open"></i></button>
+        <input  id="hex-input" type="file" accept=".hex" style="display:none;">
+
+        <select id="examples-sel">
+            <option value="" selected>Select an example</option>
+            <option value="ascii-asm/ascii.hex">ASCII</option>
+            <option value="hello-asm/hello.hex">Hello</option>
+            <option value="echo-asm/echo.hex">Echo</option>
+            <option value="bitmap-asm/bitmap.hex">Bitmap</option>
+            <option value="cursor-asm/cursor.hex">Cursor</option>
+            <option value="gpio-asm/gpio-interrupts.hex">GPIO</option>
+        </select>
+    </div>
+
+    <div class="toolbar-group">
+        <label for="animate-cb">Animation</label>
+        <input id="animate-cb" type="checkbox" title="Animate data transfers during instruction execution.">
+        <label for="speed">Speed</label>
+        <input id="speed" type="number" step="1" value="10" min="1" max="100" title="Set the animation speed. Has no effect if animations are disabled.">
+    </div>
+
+    <div class="toolbar-group">
+        <input id="reset-btn" type="button" value="Reset" title="Reset the processor and peripherals. Does not clear the memory.">
+        <input id="run-btn"   type="button" value="Run"   title="Execute the program forever or until a breakpoint is hit.">
+        <input id="step-btn"  type="button" value="Step"  title="Execute the current instruction.">
+
+        <input id="fetch-btn"              class="state-btn" type="button" value="Fetch"   title="Read an instruction from memory.">
+        <input id="decode-btn"             class="state-btn" type="button" value="Decode"  title="Decode the current instruction.">
+        <input id="compute-btn"            class="state-btn" type="button" value="ALU"     title="Execute an arithmetic or logic operation.">
+        <input id="compare-btn"            class="state-btn" type="button" value="Compare" title="Execute a comparison, if the current instruction is a conditional branch.">
+        <input id="loadStoreWriteBack-btn" class="state-btn" type="button" value="Mem/Reg" title="Write the ALU result to a register, or store data to a memory location.">
+        <input id="updatePC-btn"           class="state-btn" type="button" value="PC"      title="Update the program counter.">
+    </div>
+</div>
+
+<div class="main">
+    <div id="cell-memory" class="cell">
+        <h1>Memory</h1>
+        <div id="mem" class="tbl-wrapper">
+            <table>
+                <thead>
+                    <tr class="heading">
+                        <th>Address</th>
+                        <th>0</th> <th>1</th> <th>2</th> <th>3</th>
+                        <th>
+                            <select id="alt-mem-view-sel">
+                                <option value="asm" selected>Instructions</option>
+                                <option value="pseudo">Pseudo-instructions</option>
+                                <option value="ascii">Characters (ASCII)</option>
+                                <option value="int32">Decimal (signed 32-bit)</option>
+                                <option value="uint32">Decimal (unsigned 32-bit)</option>
+                                <option value="int16">Decimal (signed 16-bit)</option>
+                                <option value="uint16">Decimal (unsigned 16-bit)</option>
+                                <option value="int8">Decimal (signed 8-bit)</option>
+                                <option value="uint8">Decimal (unsigned 8-bit)</option>
+                            </select>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>00000000</th>
+                        <td class="reg">00</td>
+                        <td class="reg">00</td>
+                        <td class="reg">00</td>
+                        <td class="reg">00</td>
+                        <td class="asm">&mdash;</td>
+                        <td class="brk" title="Click to set/remove a breakpoint">&#x25cf;</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="cell-bus" class="cell">
+        <h1>Bus</h1>
+        <table>
+            <tr> <th>addr</th> <td class="bus" id="addr" colspan="4"></td> </tr>
+            <tr class="overlay"> <!-- Affects the next line -->
+                <th>data</th>
+                <td class="bus" id="data3">00</td>
+                <td class="bus" id="data2">00</td>
+                <td class="bus" id="data1">00</td>
+                <td class="bus" id="data0">00</td>
+            </tr>
+            <tr> <th>data</th> <td class="bus" id="data" colspan="4"></td> </tr>
+            <tr> <th>irq</th>  <td class="bus" id="irq" colspan="4"></td> </tr>
+        </table>
+    </div>
+    <div id="cell-pc" class="cell">
+        <h1>Program counter</h1>
+        <table>
+            <tr> <th>pc</th>   <td class="reg" id="pc"></td>   </tr>
+            <tr> <th>mepc</th> <td class="reg" id="mepc"></td> </tr>
+            <tr> <th>pc+4</th> <td class="bus" id="pc-i"></td> </tr>
+        </table>
+
+        <div class="spacer"></div>
+
+        <h1>Instruction reg.</h1>
+        <table>
+            <tr> <th>instr</th> <td class="reg" id="instr"></td> </tr>
+            <tr> <th>fn</th>    <td class="bus" id="fn"></td>    </tr>
+            <tr> <th>rs1</th>   <td class="bus" id="rs1"></td>   </tr>
+            <tr> <th>rs2</th>   <td class="bus" id="rs2"></td>   </tr>
+            <tr> <th>rd</th>    <td class="bus" id="rd"></td>    </tr>
+            <tr> <th>imm</th>   <td class="bus" id="imm"></td>   </tr>
+        </table>
+    </div>
+    <div id="cell-alu" class="cell">
+        <h1>ALU</h1>
+        <table>
+            <tr> <th>op</th> <td class="bus" id="alu-op"></td> </tr>
+            <tr> <th>a</th>  <td class="bus" id="alu-a"></td>  </tr>
+            <tr> <th>b</th>  <td class="bus" id="alu-b"></td>  </tr>
+            <tr> <th>r</th>  <td class="bus" id="alu-r"></td>  </tr>
+        </table>
+
+        <div class="spacer"></div>
+
+        <h1>Comparator</h1>
+        <table>
+            <tr> <th>op</th>    <td class="bus" id="cmp-op"></td>    </tr>
+            <tr> <th>a</th>     <td class="bus" id="cmp-a"></td>     </tr>
+            <tr> <th>b</th>     <td class="bus" id="cmp-b"></td>     </tr>
+            <tr> <th>taken</th> <td class="bus" id="cmp-taken"></td> </tr>
+        </table>
+    </div>
+    <div id="cell-x" class="cell">
+        <h1>General-purpose regs</h1>
+        <div class="tbl-wrapper">
+            <table id="x">
+                <tr> <th>x0</th>  <td class="reg" id="x0"></td>  </tr>
+                <tr> <th>x1</th>  <td class="reg" id="x1"></td>  </tr>
+                <tr> <th>x2</th>  <td class="reg" id="x2"></td>  </tr>
+                <tr> <th>x3</th>  <td class="reg" id="x3"></td>  </tr>
+                <tr> <th>x4</th>  <td class="reg" id="x4"></td>  </tr>
+                <tr> <th>x5</th>  <td class="reg" id="x5"></td>  </tr>
+                <tr> <th>x6</th>  <td class="reg" id="x6"></td>  </tr>
+                <tr> <th>x7</th>  <td class="reg" id="x7"></td>  </tr>
+                <tr> <th>x8</th>  <td class="reg" id="x8"></td>  </tr>
+                <tr> <th>x9</th>  <td class="reg" id="x9"></td>  </tr>
+                <tr> <th>x10</th> <td class="reg" id="x10"></td> </tr>
+                <tr> <th>x11</th> <td class="reg" id="x11"></td> </tr>
+                <tr> <th>x12</th> <td class="reg" id="x12"></td> </tr>
+                <tr> <th>x13</th> <td class="reg" id="x13"></td> </tr>
+                <tr> <th>x14</th> <td class="reg" id="x14"></td> </tr>
+                <tr> <th>x15</th> <td class="reg" id="x15"></td> </tr>
+                <tr> <th>x16</th> <td class="reg" id="x16"></td> </tr>
+                <tr> <th>x17</th> <td class="reg" id="x17"></td> </tr>
+                <tr> <th>x18</th> <td class="reg" id="x18"></td> </tr>
+                <tr> <th>x19</th> <td class="reg" id="x19"></td> </tr>
+                <tr> <th>x20</th> <td class="reg" id="x20"></td> </tr>
+                <tr> <th>x21</th> <td class="reg" id="x21"></td> </tr>
+                <tr> <th>x22</th> <td class="reg" id="x22"></td> </tr>
+                <tr> <th>x23</th> <td class="reg" id="x23"></td> </tr>
+                <tr> <th>x24</th> <td class="reg" id="x24"></td> </tr>
+                <tr> <th>x25</th> <td class="reg" id="x25"></td> </tr>
+                <tr> <th>x26</th> <td class="reg" id="x26"></td> </tr>
+                <tr> <th>x27</th> <td class="reg" id="x27"></td> </tr>
+                <tr> <th>x28</th> <td class="reg" id="x28"></td> </tr>
+                <tr> <th>x29</th> <td class="reg" id="x29"></td> </tr>
+                <tr> <th>x30</th> <td class="reg" id="x30"></td> </tr>
+                <tr> <th>x31</th> <td class="reg" id="x31"></td> </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<div class="io">
+    <div class="cell">
+        <h1>Text I/O</h1>
+        <table>
+            <tr class="heading">
+                <th></th> <th>0</th> <th>1</th>
+            </tr>
+            <tr>
+                <th>b0000000 (ctrl, data)</th>
+                <td class="reg" id="memb0000000"></td>
+                <td class="reg" id="memb0000001"></td>
+            </tr>
+        </table>
+
+        <input id="text-input">
+
+        <table>
+            <tr> <th>c0000000 (data)</th> <td class="reg" id="memc0000000"></td> </tr>
+        </table>
+
+        <pre id="text-output"></pre>
+    </div>
+    <div class="cell">
+        <h1>General-purpose I/O</h1>
+        <table>
+            <tr class="heading">
+                <th></th> <th>0</th> <th>1</th> <th>2</th> <th>3</th>
+            </tr>
+            <tr>
+                <th>d0000000 (dir)</th>
+                <td class="reg" id="memd0000000"></td>
+                <td class="reg" id="memd0000001"></td>
+                <td class="reg" id="memd0000002"></td>
+                <td class="reg" id="memd0000003"></td>
+            </tr>
+            <tr>
+                <th>d0000004 (ien)</th>
+                <td class="reg" id="memd0000004"></td>
+                <td class="reg" id="memd0000005"></td>
+                <td class="reg" id="memd0000006"></td>
+                <td class="reg" id="memd0000007"></td>
+            </tr>
+            <tr>
+                <th>d0000008 (rev)</th>
+                <td class="reg" id="memd0000008"></td>
+                <td class="reg" id="memd0000009"></td>
+                <td class="reg" id="memd000000a"></td>
+                <td class="reg" id="memd000000b"></td>
+            </tr>
+            <tr>
+                <th>d000000c (fev)</th>
+                <td class="reg" id="memd000000c"></td>
+                <td class="reg" id="memd000000d"></td>
+                <td class="reg" id="memd000000e"></td>
+                <td class="reg" id="memd000000f"></td>
+            </tr>
+            <tr>
+                <th>d0000010 (val)</th>
+                <td class="reg" id="memd0000010"></td>
+                <td class="reg" id="memd0000011"></td>
+                <td class="reg" id="memd0000012"></td>
+                <td class="reg" id="memd0000013"></td>
+            </tr>
+        </table>
+        <table id="gpio">
+            <tr> <th>0</th> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>
+            <tr> <th>1</th> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>
+            <tr> <th>2</th> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>
+            <tr> <th>3</th> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>
+        </table>
+    </div>
+    <div class="cell">
+        <h1>Bitmap output (00000C00&ndash;00000FFF)</h1>
+
+        <canvas id="bitmap-output" width="160" height="160"></canvas>
+    </div>
+    <div class="cell">
+        <div class="branding">
+            <h1> NIZAR MAAROUF<br>Architecture Computer<br> Simulator for Virgule<br> a minimal processor based on the RISC-V architecture </h1>
+        </div>
+    </div>
+</div>
+
+<div class="moving-value">X</div>
+<div class="moving-value">X</div>
+<div class="moving-value">X</div>
+<div class="moving-value">X</div>
+
+<svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <marker id="arrow-marker-bus1" class="bus1" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+            <path d="M0,0 L1,2 L0,4 L4,2Z" />
+        </marker>
+        <marker id="arrow-marker-bus2" class="bus2" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+            <path d="M0,0 L1,2 L0,4 L4,2Z" />
+        </marker>
+        <marker id="arrow-marker-bus3" class="bus3" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+            <path d="M0,0 L1,2 L0,4 L4,2Z" />
+        </marker>
+        <marker id="arrow-marker-active-bus1" class="active bus1" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+            <path d="M0,0 L1,2 L0,4 L4,2Z" />
+        </marker>
+        <marker id="arrow-marker-active-bus2" class="active bus2" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+            <path d="M0,0 L1,2 L0,4 L4,2Z" />
+        </marker>
+        <marker id="arrow-marker-active-bus3" class="active bus3" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+            <path d="M0,0 L1,2 L0,4 L4,2Z" />
+        </marker>
+    </defs>
+</svg>
+
+<script src="node_modules/file-saver/dist/FileSaver.min.js"></script>
+<script src="src/index.js" type="module"></script>
